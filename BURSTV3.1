@@ -1,0 +1,5437 @@
+--[[
+================================================================
+                       BURST UI LIBRARY
+                             V3.1
+================================================================
+
+        ✦ BURST - Beautiful Universal Roblox System Toolkit ✦
+
+        • Ultra Smooth Animations
+        • Welcome Animation
+        • Custom Logo
+        • Tabs
+        • Groups
+        • Sections
+        • Button
+        • Toggle
+        • Slider
+        • Dropdown
+        • TextBox
+        • Full HSV Color Picker
+        • RGB / HEX
+        • Notifications
+        • Draggable
+        • Rounded Corners
+        • Custom Toggle Key
+        • Accent Color
+        • Destroy
+================================================================
+]]
+
+local Burst = {}
+
+--==============================================================
+-- SERVICES
+--==============================================================
+
+local Players =
+    game:GetService("Players")
+
+local TweenService =
+    game:GetService("TweenService")
+
+local UserInputService =
+    game:GetService("UserInputService")
+
+local RunService =
+    game:GetService("RunService")
+
+local TextService =
+    game:GetService("TextService")
+
+--==============================================================
+-- CONFIG
+--==============================================================
+
+local Config = {
+
+    Name = "Burst",
+
+    Subtitle = "Universal Interface",
+
+    Logo = "rbxassetid://129878475756832",
+
+    ToggleKey = Enum.KeyCode.K,
+
+    AnimationSpeed = 1,
+
+    Theme = {
+
+        Accent =
+            Color3.fromRGB(
+                145,
+                82,
+                255
+            ),
+
+        AccentDark =
+            Color3.fromRGB(
+                103,
+                55,
+                200
+            ),
+
+        Background =
+            Color3.fromRGB(
+                9,
+                10,
+                16
+            ),
+
+        Sidebar =
+            Color3.fromRGB(
+                12,
+                13,
+                20
+            ),
+
+        Secondary =
+            Color3.fromRGB(
+                17,
+                18,
+                27
+            ),
+
+        Tertiary =
+            Color3.fromRGB(
+                24,
+                25,
+                35
+            ),
+
+        Hover =
+            Color3.fromRGB(
+                31,
+                29,
+                45
+            ),
+
+        Text =
+            Color3.fromRGB(
+                245,
+                245,
+                250
+            ),
+
+        SubText =
+            Color3.fromRGB(
+                145,
+                148,
+                160
+            ),
+
+        Muted =
+            Color3.fromRGB(
+                90,
+                93,
+                106
+            ),
+
+        Stroke =
+            Color3.fromRGB(
+                65,
+                67,
+                84
+            ),
+
+        Danger =
+            Color3.fromRGB(
+                255,
+                75,
+                92
+            )
+    }
+}
+
+--==============================================================
+-- UTILITY
+--==============================================================
+
+local function New(
+    Class,
+    Properties
+)
+
+    local Object =
+        Instance.new(Class)
+
+    for Property, Value in pairs(
+        Properties or {}
+    ) do
+
+        pcall(function()
+
+            Object[Property] =
+                Value
+
+        end)
+
+    end
+
+    return Object
+end
+
+
+local function Corner(
+    Object,
+    Radius
+)
+
+    local C =
+        Instance.new("UICorner")
+
+    C.CornerRadius =
+        UDim.new(
+            0,
+            Radius or 10
+        )
+
+    C.Parent =
+        Object
+
+    return C
+end
+
+
+local function Stroke(
+    Object,
+    Color,
+    Transparency,
+    Thickness
+)
+
+    local S =
+        Instance.new("UIStroke")
+
+    S.Color =
+        Color
+        or
+        Config.Theme.Stroke
+
+    S.Transparency =
+        Transparency
+        or
+        0.7
+
+    S.Thickness =
+        Thickness
+        or
+        1
+
+    S.Parent =
+        Object
+
+    return S
+end
+
+
+local function Tween(
+    Object,
+    Time,
+    Properties,
+    Style,
+    Direction
+)
+
+    local Animation =
+        TweenService:Create(
+
+            Object,
+
+            TweenInfo.new(
+
+                (Time or .25)
+                    /
+                    Config.AnimationSpeed,
+
+                Style
+                    or
+                    Enum.EasingStyle.Quint,
+
+                Direction
+                    or
+                    Enum.EasingDirection.Out
+            ),
+
+            Properties
+        )
+
+    Animation:Play()
+
+    return Animation
+end
+
+
+local function GetParent()
+
+    if gethui then
+
+        local Success,
+            Result =
+            pcall(gethui)
+
+        if Success and Result then
+            return Result
+        end
+
+    end
+
+    return game:GetService(
+        "CoreGui"
+    )
+end
+
+--==============================================================
+-- PARENT
+--==============================================================
+
+local Parent =
+    GetParent()
+
+local Old =
+    Parent:FindFirstChild(
+        Config.Name
+    )
+
+if Old then
+    Old:Destroy()
+end
+
+--==============================================================
+-- SCREEN GUI
+--==============================================================
+
+local ScreenGui =
+    New(
+        "ScreenGui",
+        {
+            Name =
+                Config.Name,
+
+            Parent =
+                Parent,
+
+            IgnoreGuiInset =
+                true,
+
+            ResetOnSpawn =
+                false,
+
+            ZIndexBehavior =
+                Enum.ZIndexBehavior.Sibling
+        }
+    )
+
+Burst.Gui =
+    ScreenGui
+
+--==============================================================
+-- MAIN
+--==============================================================
+
+local Main =
+    New(
+        "Frame",
+        {
+            Parent =
+                ScreenGui,
+
+            AnchorPoint =
+                Vector2.new(
+                    .5,
+                    .5
+                ),
+
+            Position =
+                UDim2.fromScale(
+                    .5,
+                    .5
+                ),
+
+            Size =
+                UDim2.fromOffset(
+                    820,
+                    560
+                ),
+
+            BackgroundColor3 =
+                Config.Theme.Background,
+
+            BorderSizePixel =
+                0,
+
+            ClipsDescendants =
+                true
+        }
+    )
+
+Corner(
+    Main,
+    20
+)
+
+Stroke(
+    Main,
+    Config.Theme.Stroke,
+    .48,
+    1
+)
+
+local Scale =
+    New(
+        "UIScale",
+        {
+            Parent =
+                Main,
+
+            Scale =
+                1
+        }
+    )
+
+--==============================================================
+-- BACKGROUND GLOW
+--==============================================================
+
+local Glow =
+    New(
+        "Frame",
+        {
+            Parent =
+                Main,
+
+            Position =
+                UDim2.fromOffset(
+                    -80,
+                    -80
+                ),
+
+            Size =
+                UDim2.fromOffset(
+                    300,
+                    300
+                ),
+
+            BackgroundColor3 =
+                Config.Theme.Accent,
+
+            BackgroundTransparency =
+                .93,
+
+            BorderSizePixel =
+                0,
+
+            ZIndex =
+                0
+        }
+    )
+
+Corner(
+    Glow,
+    150
+)
+
+--==============================================================
+-- ACCENT LINE
+--==============================================================
+
+local AccentLine =
+    New(
+        "Frame",
+        {
+            Parent =
+                Main,
+
+            Size =
+                UDim2.new(
+                    1,
+                    0,
+                    0,
+                    4
+                ),
+
+            BackgroundColor3 =
+                Config.Theme.Accent,
+
+            BorderSizePixel =
+                0,
+
+            ZIndex =
+                10
+        }
+    )
+
+--==============================================================
+-- HEADER
+--==============================================================
+
+local Header =
+    New(
+        "Frame",
+        {
+            Parent =
+                Main,
+
+            Position =
+                UDim2.fromOffset(
+                    0,
+                    4
+                ),
+
+            Size =
+                UDim2.new(
+                    1,
+                    0,
+                    0,
+                    76
+                ),
+
+            BackgroundColor3 =
+                Config.Theme.Secondary,
+
+            BorderSizePixel =
+                0,
+
+            ZIndex =
+                5
+        }
+    )
+
+--==============================================================
+-- LOGO
+--==============================================================
+
+local Logo =
+    New(
+        "Frame",
+        {
+            Parent =
+                Header,
+
+            Position =
+                UDim2.fromOffset(
+                    20,
+                    18
+                ),
+
+            Size =
+                UDim2.fromOffset(
+                    42,
+                    42
+                ),
+
+            BackgroundColor3 =
+                Config.Theme.Accent,
+
+            BorderSizePixel =
+                0,
+
+            ClipsDescendants =
+                true,
+
+            ZIndex =
+                8
+        }
+    )
+
+Corner(
+    Logo,
+    13
+)
+
+local LogoImage =
+    New(
+        "ImageLabel",
+        {
+            Parent =
+                Logo,
+
+            Size =
+                UDim2.fromScale(
+                    1,
+                    1
+                ),
+
+            BackgroundTransparency =
+                1,
+
+            Image =
+                Config.Logo,
+
+            ScaleType =
+                Enum.ScaleType.Fit,
+
+            ZIndex =
+                9
+        }
+    )
+
+--==============================================================
+-- TITLE
+--==============================================================
+
+local Title =
+    New(
+        "TextLabel",
+        {
+            Parent =
+                Header,
+
+            Position =
+                UDim2.fromOffset(
+                    76,
+                    14
+                ),
+
+            Size =
+                UDim2.fromOffset(
+                    300,
+                    28
+                ),
+
+            BackgroundTransparency =
+                1,
+
+            Text =
+                Config.Name,
+
+            Font =
+                Enum.Font.GothamBold,
+
+            TextSize =
+                22,
+
+            TextColor3 =
+                Config.Theme.Text,
+
+            TextXAlignment =
+                Enum.TextXAlignment.Left,
+
+            ZIndex =
+                8
+        }
+    )
+
+
+local Subtitle =
+    New(
+        "TextLabel",
+        {
+            Parent =
+                Header,
+
+            Position =
+                UDim2.fromOffset(
+                    77,
+                    40
+                ),
+
+            Size =
+                UDim2.fromOffset(
+                    350,
+                    18
+                ),
+
+            BackgroundTransparency =
+                1,
+
+            Text =
+                Config.Subtitle,
+
+            Font =
+                Enum.Font.Gotham,
+
+            TextSize =
+                11,
+
+            TextColor3 =
+                Config.Theme.SubText,
+
+            TextXAlignment =
+                Enum.TextXAlignment.Left,
+
+            ZIndex =
+                8
+        }
+    )
+
+--==============================================================
+-- CLOSE
+--==============================================================
+
+local Close =
+    New(
+        "TextButton",
+        {
+            Parent =
+                Header,
+
+            AnchorPoint =
+                Vector2.new(
+                    1,
+                    .5
+                ),
+
+            Position =
+                UDim2.new(
+                    1,
+                    -18,
+                    .5,
+                    0
+                ),
+
+            Size =
+                UDim2.fromOffset(
+                    42,
+                    42
+                ),
+
+            BackgroundColor3 =
+                Config.Theme.Tertiary,
+
+            BorderSizePixel =
+                0,
+
+            Text =
+                "×",
+
+            Font =
+                Enum.Font.GothamBold,
+
+            TextSize =
+                25,
+
+            TextColor3 =
+                Config.Theme.Text,
+
+            AutoButtonColor =
+                false,
+
+            ZIndex =
+                10
+        }
+    )
+
+Corner(
+    Close,
+    13
+)
+
+--==============================================================
+-- CLOSE HOVER
+--==============================================================
+
+Close.MouseEnter:Connect(
+    function()
+
+        Tween(
+            Close,
+            .18,
+            {
+                BackgroundColor3 =
+                    Config.Theme.Danger,
+
+                TextColor3 =
+                    Color3.new(
+                        1,
+                        1,
+                        1
+                    )
+            }
+        )
+
+        Tween(
+            Close,
+            .22,
+            {
+                Rotation =
+                    90
+            },
+            Enum.EasingStyle.Back
+        )
+
+    end
+)
+
+
+Close.MouseLeave:Connect(
+    function()
+
+        Tween(
+            Close,
+            .18,
+            {
+                BackgroundColor3 =
+                    Config.Theme.Tertiary,
+
+                TextColor3 =
+                    Config.Theme.Text,
+
+                Rotation =
+                    0
+            }
+        )
+
+    end
+)
+
+--==============================================================
+-- SIDEBAR
+--==============================================================
+
+local Sidebar =
+    New(
+        "Frame",
+        {
+            Parent =
+                Main,
+
+            Position =
+                UDim2.fromOffset(
+                    0,
+                    80
+                ),
+
+            Size =
+                UDim2.new(
+                    0,
+                    190,
+                    1,
+                    -80
+                ),
+
+            BackgroundColor3 =
+                Config.Theme.Sidebar,
+
+            BorderSizePixel =
+                0,
+
+            ZIndex =
+                3
+        }
+    )
+
+--==============================================================
+-- SIDEBAR TITLE
+--==============================================================
+
+local MenuTitle =
+    New(
+        "TextLabel",
+        {
+            Parent =
+                Sidebar,
+
+            Position =
+                UDim2.fromOffset(
+                    18,
+                    15
+                ),
+
+            Size =
+                UDim2.new(
+                    1,
+                    -36,
+                    0,
+                    20
+                ),
+
+            BackgroundTransparency =
+                1,
+
+            Text =
+                "MENU",
+
+            Font =
+                Enum.Font.GothamBold,
+
+            TextSize =
+                9,
+
+            TextColor3 =
+                Config.Theme.Muted,
+
+            TextXAlignment =
+                Enum.TextXAlignment.Left,
+
+            ZIndex =
+                5
+        }
+    )
+
+--==============================================================
+-- TABS
+--==============================================================
+
+local Tabs =
+    New(
+        "ScrollingFrame",
+        {
+            Parent =
+                Sidebar,
+
+            Position =
+                UDim2.fromOffset(
+                    10,
+                    40
+                ),
+
+            Size =
+                UDim2.new(
+                    1,
+                    -20,
+                    1,
+                    -50
+                ),
+
+            BackgroundTransparency =
+                1,
+
+            BorderSizePixel =
+                0,
+
+            ScrollBarThickness =
+                0,
+
+            CanvasSize =
+                UDim2.new(),
+
+            ZIndex =
+                4
+        }
+    )
+
+local TabLayout =
+    New(
+        "UIListLayout",
+        {
+            Parent =
+                Tabs,
+
+            Padding =
+                UDim.new(
+                    0,
+                    8
+                ),
+
+            SortOrder =
+                Enum.SortOrder.LayoutOrder
+        }
+    )
+
+--==============================================================
+-- CONTENT
+--==============================================================
+
+local Content =
+    New(
+        "Frame",
+        {
+            Parent =
+                Main,
+
+            Position =
+                UDim2.fromOffset(
+                    190,
+                    80
+                ),
+
+            Size =
+                UDim2.new(
+                    1,
+                    -190,
+                    1,
+                    -80
+                ),
+
+            BackgroundTransparency =
+                1,
+
+            ClipsDescendants =
+                true,
+
+            ZIndex =
+                2
+        }
+    )
+
+--==============================================================
+-- TAB SYSTEM
+--==============================================================
+
+local Pages = {}
+local TabObjects = {}
+local CurrentPage = nil
+
+local function AnimatePageIn(
+    Page
+)
+
+    Page.Visible =
+        true
+
+    Page.Position =
+        UDim2.new(
+            0,
+            35,
+            0,
+            0
+        )
+
+    Page.GroupTransparency =
+        nil
+
+    Tween(
+        Page,
+        .35,
+        {
+            Position =
+                UDim2.new(
+                    0,
+                    0,
+                    0,
+                    0
+                )
+        },
+        Enum.EasingStyle.Quint
+    )
+
+end
+
+--==============================================================
+-- CREATE TAB
+--==============================================================
+
+function Burst:CreateTab(
+    Name,
+    Icon
+)
+
+    local TabButton =
+        New(
+            "TextButton",
+            {
+                Parent =
+                    Tabs,
+
+                Size =
+                    UDim2.new(
+                        1,
+                        0,
+                        0,
+                        48
+                    ),
+
+                BackgroundColor3 =
+                    Config.Theme.Secondary,
+
+                BorderSizePixel =
+                    0,
+
+                Text =
+                    "",
+
+                AutoButtonColor =
+                    false,
+
+                ZIndex =
+                    5
+            }
+        )
+
+    Corner(
+        TabButton,
+        13
+    )
+
+
+    local Indicator =
+        New(
+            "Frame",
+            {
+                Parent =
+                    TabButton,
+
+                Position =
+                    UDim2.fromOffset(
+                        0,
+                        12
+                    ),
+
+                Size =
+                    UDim2.fromOffset(
+                        3,
+                        24
+                    ),
+
+                BackgroundColor3 =
+                    Config.Theme.Accent,
+
+                BackgroundTransparency =
+                    1,
+
+                BorderSizePixel =
+                    0,
+
+                ZIndex =
+                    8
+            }
+        )
+
+    Corner(
+        Indicator,
+        3
+    )
+
+
+    local IconLabel =
+        New(
+            "TextLabel",
+            {
+                Parent =
+                    TabButton,
+
+                Position =
+                    UDim2.fromOffset(
+                        13,
+                        0
+                    ),
+
+                Size =
+                    UDim2.fromOffset(
+                        28,
+                        48
+                    ),
+
+                BackgroundTransparency =
+                    1,
+
+                Text =
+                    Icon or "•",
+
+                Font =
+                    Enum.Font.GothamBold,
+
+                TextSize =
+                    15,
+
+                TextColor3 =
+                    Config.Theme.SubText,
+
+                ZIndex =
+                    7
+            }
+        )
+
+
+    local NameLabel =
+        New(
+            "TextLabel",
+            {
+                Parent =
+                    TabButton,
+
+                Position =
+                    UDim2.fromOffset(
+                        48,
+                        0
+                    ),
+
+                Size =
+                    UDim2.new(
+                        1,
+                        -55,
+                        1,
+                        0
+                    ),
+
+                BackgroundTransparency =
+                    1,
+
+                Text =
+                    Name,
+
+                Font =
+                    Enum.Font.GothamMedium,
+
+                TextSize =
+                    12,
+
+                TextColor3 =
+                    Config.Theme.SubText,
+
+                TextXAlignment =
+                    Enum.TextXAlignment.Left,
+
+                ZIndex =
+                    7
+            }
+        )
+
+
+    local Page =
+        New(
+            "ScrollingFrame",
+            {
+                Parent =
+                    Content,
+
+                Size =
+                    UDim2.fromScale(
+                        1,
+                        1
+                    ),
+
+                Position =
+                    UDim2.new(
+                        0,
+                        30,
+                        0,
+                        0
+                    ),
+
+                BackgroundTransparency =
+                    1,
+
+                BorderSizePixel =
+                    0,
+
+                ScrollBarThickness =
+                    3,
+
+                ScrollBarImageColor3 =
+                    Config.Theme.Accent,
+
+                ScrollBarImageTransparency =
+                    .2,
+
+                CanvasSize =
+                    UDim2.new(),
+
+                Visible =
+                    false,
+
+                ZIndex =
+                    3
+            }
+        )
+
+
+    New(
+        "UIPadding",
+        {
+            Parent =
+                Page,
+
+            PaddingTop =
+                UDim.new(
+                    0,
+                    20
+                ),
+
+            PaddingLeft =
+                UDim.new(
+                    0,
+                    20
+                ),
+
+            PaddingRight =
+                UDim.new(
+                    0,
+                    20
+                ),
+
+            PaddingBottom =
+                UDim.new(
+                    0,
+                    20
+                )
+        }
+    )
+
+
+    local Layout =
+        New(
+            "UIListLayout",
+            {
+                Parent =
+                    Page,
+
+                Padding =
+                    UDim.new(
+                        0,
+                        12
+                    ),
+
+                SortOrder =
+                    Enum.SortOrder.LayoutOrder
+            }
+        )
+
+
+    Layout:GetPropertyChangedSignal(
+        "AbsoluteContentSize"
+    ):Connect(
+        function()
+
+            Page.CanvasSize =
+                UDim2.new(
+                    0,
+                    0,
+                    0,
+                    Layout.AbsoluteContentSize.Y
+                        + 40
+                )
+
+        end
+    )
+
+
+    Pages[Name] =
+        Page
+
+
+    TabObjects[Name] = {
+
+        Button =
+            TabButton,
+
+        Icon =
+            IconLabel,
+
+        Label =
+            NameLabel,
+
+        Indicator =
+            Indicator,
+
+        Page =
+            Page
+    }
+
+
+    local function Select()
+
+        if CurrentPage ==
+            Page
+        then
+            return
+        end
+
+
+        for _, Data in pairs(
+            TabObjects
+        ) do
+
+            Tween(
+                Data.Button,
+                .2,
+                {
+                    BackgroundColor3 =
+                        Config.Theme.Secondary
+                }
+            )
+
+            Tween(
+                Data.Icon,
+                .2,
+                {
+                    TextColor3 =
+                        Config.Theme.SubText
+                }
+            )
+
+            Tween(
+                Data.Label,
+                .2,
+                {
+                    TextColor3 =
+                        Config.Theme.SubText
+                }
+            )
+
+            Tween(
+                Data.Indicator,
+                .2,
+                {
+                    BackgroundTransparency =
+                        1
+                }
+            )
+
+        end
+
+
+        for _, P in pairs(
+            Pages
+        ) do
+
+            P.Visible =
+                false
+
+        end
+
+
+        Page.Visible =
+            true
+
+        Page.Position =
+            UDim2.new(
+                0,
+                20,
+                0,
+                0
+            )
+
+
+        Tween(
+            Page,
+            .32,
+            {
+                Position =
+                    UDim2.new(
+                        0,
+                        0,
+                        0,
+                        0
+                    )
+            }
+        )
+
+
+        Tween(
+            TabButton,
+            .22,
+            {
+                BackgroundColor3 =
+                    Color3.fromRGB(
+                        39,
+                        31,
+                        63
+                    )
+            }
+        )
+
+
+        Tween(
+            IconLabel,
+            .22,
+            {
+                TextColor3 =
+                    Config.Theme.Accent
+            }
+        )
+
+
+        Tween(
+            NameLabel,
+            .22,
+            {
+                TextColor3 =
+                    Config.Theme.Text
+            }
+        )
+
+
+        Tween(
+            Indicator,
+            .22,
+            {
+                BackgroundTransparency =
+                    0
+            }
+        )
+
+
+        CurrentPage =
+            Page
+
+    end
+
+
+    TabButton.MouseButton1Click:Connect(
+        Select
+    )
+
+
+    TabButton.MouseEnter:Connect(
+        function()
+
+            if CurrentPage ~=
+                Page
+            then
+
+                Tween(
+                    TabButton,
+                    .15,
+                    {
+                        BackgroundColor3 =
+                            Config.Theme.Hover
+                    }
+                )
+
+            end
+
+        end
+    )
+
+
+    TabButton.MouseLeave:Connect(
+        function()
+
+            if CurrentPage ~=
+                Page
+            then
+
+                Tween(
+                    TabButton,
+                    .15,
+                    {
+                        BackgroundColor3 =
+                            Config.Theme.Secondary
+                    }
+                )
+
+            end
+
+        end
+    )
+
+
+    if not CurrentPage then
+
+        task.defer(
+            Select
+        )
+
+    end
+
+--==============================================================
+-- TAB API
+--==============================================================
+
+    local Tab = {}
+
+--==============================================================
+-- CREATE GROUP
+--==============================================================
+
+    function Tab:CreateGroup(
+        GroupName
+    )
+
+        local Group =
+            New(
+                "Frame",
+                {
+                    Parent =
+                        Page,
+
+                    Size =
+                        UDim2.new(
+                            1,
+                            0,
+                            0,
+                            0
+                        ),
+
+                    AutomaticSize =
+                        Enum.AutomaticSize.Y,
+
+                    BackgroundColor3 =
+                        Config.Theme.Secondary,
+
+                    BorderSizePixel =
+                        0
+                }
+            )
+
+        Corner(
+            Group,
+            16
+        )
+
+        Stroke(
+            Group,
+            Config.Theme.Stroke,
+            .72,
+            1
+        )
+
+
+        local GroupTitle =
+            New(
+                "TextLabel",
+                {
+                    Parent =
+                        Group,
+
+                    Position =
+                        UDim2.fromOffset(
+                            16,
+                            12
+                        ),
+
+                    Size =
+                        UDim2.new(
+                            1,
+                            -32,
+                            0,
+                            24
+                        ),
+
+                    BackgroundTransparency =
+                        1,
+
+                    Text =
+                        GroupName,
+
+                    Font =
+                        Enum.Font.GothamBold,
+
+                    TextSize =
+                        14,
+
+                    TextColor3 =
+                        Config.Theme.Text,
+
+                    TextXAlignment =
+                        Enum.TextXAlignment.Left
+                }
+            )
+
+
+        local Holder =
+            New(
+                "Frame",
+                {
+                    Parent =
+                        Group,
+
+                    Position =
+                        UDim2.fromOffset(
+                            12,
+                            45
+                        ),
+
+                    Size =
+                        UDim2.new(
+                            1,
+                            -24,
+                            0,
+                            0
+                        ),
+
+                    AutomaticSize =
+                        Enum.AutomaticSize.Y,
+
+                    BackgroundTransparency =
+                        1
+                }
+            )
+
+
+        New(
+            "UIListLayout",
+            {
+                Parent =
+                    Holder,
+
+                Padding =
+                    UDim.new(
+                        0,
+                        8
+                    ),
+
+                SortOrder =
+                    Enum.SortOrder.LayoutOrder
+            }
+        )
+
+
+        New(
+            "UIPadding",
+            {
+                Parent =
+                    Holder,
+
+                PaddingBottom =
+                    UDim.new(
+                        0,
+                        14
+                    )
+            }
+        )
+
+
+        local API = {}
+
+--==============================================================
+-- SECTION
+--==============================================================
+
+        function API:CreateSection(
+            Text
+        )
+
+            local Section =
+                New(
+                    "TextLabel",
+                    {
+                        Parent =
+                            Holder,
+
+                        Size =
+                            UDim2.new(
+                                1,
+                                0,
+                                0,
+                                27
+                            ),
+
+                        BackgroundTransparency =
+                            1,
+
+                        Text =
+                            "──  "
+                                ..
+                                Text,
+
+                        Font =
+                            Enum.Font.GothamBold,
+
+                        TextSize =
+                            10,
+
+                        TextColor3 =
+                            Config.Theme.Accent,
+
+                        TextXAlignment =
+                            Enum.TextXAlignment.Left
+                    }
+                )
+
+            return Section
+
+        end
+
+--==============================================================
+-- LABEL
+--==============================================================
+
+        function API:CreateLabel(
+            Text
+        )
+
+            local Label =
+                New(
+                    "TextLabel",
+                    {
+                        Parent =
+                            Holder,
+
+                        Size =
+                            UDim2.new(
+                                1,
+                                0,
+                                0,
+                                38
+                            ),
+
+                        BackgroundColor3 =
+                            Config.Theme.Tertiary,
+
+                        BorderSizePixel =
+                            0,
+
+                        Text =
+                            Text,
+
+                        Font =
+                            Enum.Font.Gotham,
+
+                        TextSize =
+                            11,
+
+                        TextColor3 =
+                            Config.Theme.SubText,
+
+                        TextXAlignment =
+                            Enum.TextXAlignment.Left
+                    }
+                )
+
+            Corner(
+                Label,
+                11
+            )
+
+
+            New(
+                "UIPadding",
+                {
+                    Parent =
+                        Label,
+
+                    PaddingLeft =
+                        UDim.new(
+                            0,
+                            12
+                        ),
+
+                    PaddingRight =
+                        UDim.new(
+                            0,
+                            12
+                        )
+                }
+            )
+
+
+            return Label
+
+        end
+
+--==============================================================
+-- BUTTON
+--==============================================================
+
+        function API:CreateButton(
+            Text,
+            Callback
+        )
+
+            local Button =
+                New(
+                    "TextButton",
+                    {
+                        Parent =
+                            Holder,
+
+                        Size =
+                            UDim2.new(
+                                1,
+                                0,
+                                0,
+                                44
+                            ),
+
+                        BackgroundColor3 =
+                            Config.Theme.Tertiary,
+
+                        BorderSizePixel =
+                            0,
+
+                        Text =
+                            Text,
+
+                        Font =
+                            Enum.Font.GothamMedium,
+
+                        TextSize =
+                            12,
+
+                        TextColor3 =
+                            Config.Theme.Text,
+
+                        AutoButtonColor =
+                            false
+                    }
+                )
+
+            Corner(
+                Button,
+                11
+            )
+
+
+            Button.MouseEnter:Connect(
+                function()
+
+                    Tween(
+                        Button,
+                        .16,
+                        {
+                            BackgroundColor3 =
+                                Config.Theme.Hover
+                        }
+                    )
+
+                end
+            )
+
+
+            Button.MouseLeave:Connect(
+                function()
+
+                    Tween(
+                        Button,
+                        .16,
+                        {
+                            BackgroundColor3 =
+                                Config.Theme.Tertiary
+                        }
+                    )
+
+                end
+            )
+
+
+            Button.MouseButton1Down:Connect(
+                function()
+
+                    Tween(
+                        Button,
+                        .08,
+                        {
+                            Size =
+                                UDim2.new(
+                                    1,
+                                    -4,
+                                    0,
+                                    42
+                                )
+                        }
+                    )
+
+                end
+            )
+
+
+            Button.MouseButton1Up:Connect(
+                function()
+
+                    Tween(
+                        Button,
+                        .12,
+                        {
+                            Size =
+                                UDim2.new(
+                                    1,
+                                    0,
+                                    0,
+                                    44
+                                )
+                        },
+                        Enum.EasingStyle.Back
+                    )
+
+                end
+            )
+
+
+            Button.MouseButton1Click:Connect(
+                function()
+
+                    if Callback then
+
+                        task.spawn(
+                            Callback
+                        )
+
+                    end
+
+                end
+            )
+
+
+            return Button
+
+        end
+
+--==============================================================
+-- TOGGLE
+--==============================================================
+
+        function API:CreateToggle(
+            Text,
+            Default,
+            Callback
+        )
+
+            local Value =
+                Default or false
+
+
+            local Button =
+                New(
+                    "TextButton",
+                    {
+                        Parent =
+                            Holder,
+
+                        Size =
+                            UDim2.new(
+                                1,
+                                0,
+                                0,
+                                52
+                            ),
+
+                        BackgroundColor3 =
+                            Config.Theme.Tertiary,
+
+                        BorderSizePixel =
+                            0,
+
+                        Text =
+                            "",
+
+                        AutoButtonColor =
+                            false
+                    }
+                )
+
+            Corner(
+                Button,
+                13
+            )
+
+
+            local Label =
+                New(
+                    "TextLabel",
+                    {
+                        Parent =
+                            Button,
+
+                        Position =
+                            UDim2.fromOffset(
+                                14,
+                                0
+                            ),
+
+                        Size =
+                            UDim2.new(
+                                1,
+                                -80,
+                                1,
+                                0
+                            ),
+
+                        BackgroundTransparency =
+                            1,
+
+                        Text =
+                            Text,
+
+                        Font =
+                            Enum.Font.GothamMedium,
+
+                        TextSize =
+                            12,
+
+                        TextColor3 =
+                            Config.Theme.Text,
+
+                        TextXAlignment =
+                            Enum.TextXAlignment.Left
+                    }
+                )
+
+
+            local Toggle =
+                New(
+                    "Frame",
+                    {
+                        Parent =
+                            Button,
+
+                        AnchorPoint =
+                            Vector2.new(
+                                1,
+                                .5
+                            ),
+
+                        Position =
+                            UDim2.new(
+                                1,
+                                -14,
+                                .5,
+                                0
+                            ),
+
+                        Size =
+                            UDim2.fromOffset(
+                                54,
+                                30
+                            ),
+
+                        BackgroundColor3 =
+                            Color3.fromRGB(
+                                44,
+                                46,
+                                58
+                            ),
+
+                        BorderSizePixel =
+                            0
+                    }
+                )
+
+            Corner(
+                Toggle,
+                15
+            )
+
+
+            local Circle =
+                New(
+                    "Frame",
+                    {
+                        Parent =
+                            Toggle,
+
+                        Position =
+                            UDim2.fromOffset(
+                                4,
+                                4
+                            ),
+
+                        Size =
+                            UDim2.fromOffset(
+                                22,
+                                22
+                            ),
+
+                        BackgroundColor3 =
+                            Color3.fromRGB(
+                                235,
+                                235,
+                                242
+                            ),
+
+                        BorderSizePixel =
+                            0
+                    }
+                )
+
+            Corner(
+                Circle,
+                11
+            )
+
+
+            local function Update(
+                Instant
+            )
+
+                local Time =
+                    Instant
+                    and
+                    .01
+                    or
+                    .22
+
+
+                if Value then
+
+                    Tween(
+                        Toggle,
+                        Time,
+                        {
+                            BackgroundColor3 =
+                                Config.Theme.Accent
+                        }
+                    )
+
+
+                    Tween(
+                        Circle,
+                        Time,
+                        {
+                            Position =
+                                UDim2.new(
+                                    1,
+                                    -26,
+                                    0,
+                                    4
+                                )
+                        },
+                        Enum.EasingStyle.Back
+                    )
+
+                else
+
+                    Tween(
+                        Toggle,
+                        Time,
+                        {
+                            BackgroundColor3 =
+                                Color3.fromRGB(
+                                    44,
+                                    46,
+                                    58
+                                )
+                        }
+                    )
+
+
+                    Tween(
+                        Circle,
+                        Time,
+                        {
+                            Position =
+                                UDim2.fromOffset(
+                                    4,
+                                    4
+                                )
+                        },
+                        Enum.EasingStyle.Quint
+                    )
+
+                end
+
+            end
+
+
+            Update(true)
+
+
+            Button.MouseButton1Click:Connect(
+                function()
+
+                    Value =
+                        not Value
+
+                    Update(false)
+
+
+                    if Callback then
+
+                        task.spawn(
+                            Callback,
+                            Value
+                        )
+
+                    end
+
+                end
+            )
+
+
+            return {
+
+                Set =
+                    function(_, NewValue)
+
+                        Value =
+                            NewValue
+
+                        Update(false)
+
+                        if Callback then
+
+                            Callback(
+                                Value
+                            )
+
+                        end
+
+                    end,
+
+                Get =
+                    function()
+
+                        return Value
+
+                    end
+            }
+
+        end
+
+--==============================================================
+-- SLIDER
+--==============================================================
+
+        function API:CreateSlider(
+            Text,
+            Min,
+            Max,
+            Default,
+            Callback
+        )
+
+            Min =
+                Min or 0
+
+            Max =
+                Max or 100
+
+            Default =
+                Default or Min
+
+
+            local Value =
+                math.clamp(
+                    Default,
+                    Min,
+                    Max
+                )
+
+
+            local Container =
+                New(
+                    "Frame",
+                    {
+                        Parent =
+                            Holder,
+
+                        Size =
+                            UDim2.new(
+                                1,
+                                0,
+                                0,
+                                76
+                            ),
+
+                        BackgroundColor3 =
+                            Config.Theme.Tertiary,
+
+                        BorderSizePixel =
+                            0
+                    }
+                )
+
+            Corner(
+                Container,
+                13
+            )
+
+
+            local Label =
+                New(
+                    "TextLabel",
+                    {
+                        Parent =
+                            Container,
+
+                        Position =
+                            UDim2.fromOffset(
+                                14,
+                                9
+                            ),
+
+                        Size =
+                            UDim2.new(
+                                1,
+                                -75,
+                                0,
+                                22
+                            ),
+
+                        BackgroundTransparency =
+                            1,
+
+                        Text =
+                            Text,
+
+                        Font =
+                            Enum.Font.GothamMedium,
+
+                        TextSize =
+                            12,
+
+                        TextColor3 =
+                            Config.Theme.Text,
+
+                        TextXAlignment =
+                            Enum.TextXAlignment.Left
+                    }
+                )
+
+
+            local ValueLabel =
+                New(
+                    "TextLabel",
+                    {
+                        Parent =
+                            Container,
+
+                        AnchorPoint =
+                            Vector2.new(
+                                1,
+                                0
+                            ),
+
+                        Position =
+                            UDim2.new(
+                                1,
+                                -14,
+                                0,
+                                9
+                            ),
+
+                        Size =
+                            UDim2.fromOffset(
+                                55,
+                                22
+                            ),
+
+                        BackgroundTransparency =
+                            1,
+
+                        Text =
+                            tostring(
+                                Value
+                            ),
+
+                        Font =
+                            Enum.Font.GothamBold,
+
+                        TextSize =
+                            11,
+
+                        TextColor3 =
+                            Config.Theme.Accent,
+
+                        TextXAlignment =
+                            Enum.TextXAlignment.Right
+                    }
+                )
+
+
+            local Track =
+                New(
+                    "Frame",
+                    {
+                        Parent =
+                            Container,
+
+                        Position =
+                            UDim2.new(
+                                0,
+                                14,
+                                0,
+                                47
+                            ),
+
+                        Size =
+                            UDim2.new(
+                                1,
+                                -28,
+                                0,
+                                7
+                            ),
+
+                        BackgroundColor3 =
+                            Color3.fromRGB(
+                                44,
+                                45,
+                                58
+                            ),
+
+                        BorderSizePixel =
+                            0
+                    }
+                )
+
+            Corner(
+                Track,
+                5
+            )
+
+
+            local Fill =
+                New(
+                    "Frame",
+                    {
+                        Parent =
+                            Track,
+
+                        Size =
+                            UDim2.new(
+                                0,
+                                0,
+                                1,
+                                0
+                            ),
+
+                        BackgroundColor3 =
+                            Config.Theme.Accent,
+
+                        BorderSizePixel =
+                            0
+                    }
+                )
+
+            Corner(
+                Fill,
+                5
+            )
+
+
+            local Knob =
+                New(
+                    "Frame",
+                    {
+                        Parent =
+                            Track,
+
+                        AnchorPoint =
+                            Vector2.new(
+                                .5,
+                                .5
+                            ),
+
+                        Position =
+                            UDim2.fromScale(
+                                0,
+                                .5
+                            ),
+
+                        Size =
+                            UDim2.fromOffset(
+                                15,
+                                15
+                            ),
+
+                        BackgroundColor3 =
+                            Color3.new(
+                                1,
+                                1,
+                                1
+                            ),
+
+                        BorderSizePixel =
+                            0,
+
+                        ZIndex =
+                            5
+                    }
+                )
+
+            Corner(
+                Knob,
+                8
+            )
+
+
+            local Dragging =
+                false
+
+
+            local function SetValue(
+                NewValue
+            )
+
+                Value =
+                    math.clamp(
+                        NewValue,
+                        Min,
+                        Max
+                    )
+
+
+                local Percent =
+                    (
+                        Value -
+                        Min
+                    )
+                    /
+                    (
+                        Max -
+                        Min
+                    )
+
+
+                ValueLabel.Text =
+                    tostring(
+                        math.floor(
+                            Value * 100
+                        )
+                        / 100
+                    )
+
+
+                Tween(
+                    Fill,
+                    .12,
+                    {
+                        Size =
+                            UDim2.new(
+                                Percent,
+                                0,
+                                1,
+                                0
+                            )
+                    },
+                    Enum.EasingStyle.Quint
+                )
+
+
+                Tween(
+                    Knob,
+                    .12,
+                    {
+                        Position =
+                            UDim2.new(
+                                Percent,
+                                0,
+                                .5,
+                                0
+                            )
+                    },
+                    Enum.EasingStyle.Quint
+                )
+
+
+                if Callback then
+
+                    Callback(
+                        Value
+                    )
+
+                end
+
+            end
+
+
+            local function FromInput(
+                Input
+            )
+
+                local Percent =
+                    math.clamp(
+                        (
+                            Input.Position.X
+                            -
+                            Track.AbsolutePosition.X
+                        )
+                        /
+                        Track.AbsoluteSize.X,
+
+                        0,
+                        1
+                    )
+
+
+                SetValue(
+                    Min
+                    +
+                    (
+                        Max -
+                        Min
+                    )
+                    *
+                    Percent
+                )
+
+            end
+
+
+            Track.InputBegan:Connect(
+                function(Input)
+
+                    if
+                        Input.UserInputType
+                        ==
+                        Enum.UserInputType.MouseButton1
+
+                        or
+
+                        Input.UserInputType
+                        ==
+                        Enum.UserInputType.Touch
+                    then
+
+                        Dragging =
+                            true
+
+                        FromInput(
+                            Input
+                        )
+
+                    end
+
+                end
+            )
+
+
+            UserInputService.InputChanged:Connect(
+                function(Input)
+
+                    if not Dragging then
+                        return
+                    end
+
+
+                    if
+                        Input.UserInputType
+                        ==
+                        Enum.UserInputType.MouseMovement
+
+                        or
+
+                        Input.UserInputType
+                        ==
+                        Enum.UserInputType.Touch
+                    then
+
+                        FromInput(
+                            Input
+                        )
+
+                    end
+
+                end
+            )
+
+
+            UserInputService.InputEnded:Connect(
+                function(Input)
+
+                    if
+                        Input.UserInputType
+                        ==
+                        Enum.UserInputType.MouseButton1
+
+                        or
+
+                        Input.UserInputType
+                        ==
+                        Enum.UserInputType.Touch
+                    then
+
+                        Dragging =
+                            false
+
+                    end
+
+                end
+            )
+
+
+            SetValue(
+                Value
+            )
+
+
+            return {
+
+                Set =
+                    function(_, NewValue)
+
+                        SetValue(
+                            NewValue
+                        )
+
+                    end,
+
+                Get =
+                    function()
+
+                        return Value
+
+                    end
+            }
+
+        end
+
+--==============================================================
+-- TEXTBOX
+--==============================================================
+
+        function API:CreateTextBox(
+            Text,
+            Placeholder,
+            Default,
+            Callback
+        )
+
+            local Container =
+                New(
+                    "Frame",
+                    {
+                        Parent =
+                            Holder,
+
+                        Size =
+                            UDim2.new(
+                                1,
+                                0,
+                                0,
+                                52
+                            ),
+
+                        BackgroundColor3 =
+                            Config.Theme.Tertiary,
+
+                        BorderSizePixel =
+                            0
+                    }
+                )
+
+            Corner(
+                Container,
+                13
+            )
+
+
+            local Label =
+                New(
+                    "TextLabel",
+                    {
+                        Parent =
+                            Container,
+
+                        Position =
+                            UDim2.fromOffset(
+                                13,
+                                0
+                            ),
+
+                        Size =
+                            UDim2.new(
+                                .4,
+                                0,
+                                1,
+                                0
+                            ),
+
+                        BackgroundTransparency =
+                            1,
+
+                        Text =
+                            Text,
+
+                        Font =
+                            Enum.Font.GothamMedium,
+
+                        TextSize =
+                            11,
+
+                        TextColor3 =
+                            Config.Theme.Text,
+
+                        TextXAlignment =
+                            Enum.TextXAlignment.Left
+                    }
+                )
+
+
+            local Box =
+                New(
+                    "TextBox",
+                    {
+                        Parent =
+                            Container,
+
+                        AnchorPoint =
+                            Vector2.new(
+                                1,
+                                .5
+                            ),
+
+                        Position =
+                            UDim2.new(
+                                1,
+                                -8,
+                                .5,
+                                0
+                            ),
+
+                        Size =
+                            UDim2.new(
+                                .53,
+                                0,
+                                0,
+                                34
+                            ),
+
+                        BackgroundColor3 =
+                            Config.Theme.Secondary,
+
+                        BorderSizePixel =
+                            0,
+
+                        Text =
+                            Default
+                            or
+                            "",
+
+                        PlaceholderText =
+                            Placeholder
+                            or
+                            "",
+
+                        PlaceholderColor3 =
+                            Config.Theme.Muted,
+
+                        Font =
+                            Enum.Font.Gotham,
+
+                        TextSize =
+                            11,
+
+                        TextColor3 =
+                            Config.Theme.Text,
+
+                        ClearTextOnFocus =
+                            false
+                    }
+                )
+
+            Corner(
+                Box,
+                9
+            )
+
+
+            Box.Focused:Connect(
+                function()
+
+                    Tween(
+                        Box,
+                        .2,
+                        {
+                            BackgroundColor3 =
+                                Config.Theme.Hover
+                        }
+                    )
+
+                end
+            )
+
+
+            Box.FocusLost:Connect(
+                function()
+
+                    Tween(
+                        Box,
+                        .2,
+                        {
+                            BackgroundColor3 =
+                                Config.Theme.Secondary
+                        }
+                    )
+
+
+                    if Callback then
+
+                        Callback(
+                            Box.Text
+                        )
+
+                    end
+
+                end
+            )
+
+
+            return Box
+
+        end
+
+--==============================================================
+-- DROPDOWN
+--==============================================================
+
+        function API:CreateDropdown(
+            Text,
+            Options,
+            Default,
+            Callback
+        )
+
+            Options =
+                Options or {}
+
+
+            local Selected =
+                Default
+                or
+                Options[1]
+
+
+            local Open =
+                false
+
+
+            local Container =
+                New(
+                    "Frame",
+                    {
+                        Parent =
+                            Holder,
+
+                        Size =
+                            UDim2.new(
+                                1,
+                                0,
+                                0,
+                                52
+                            ),
+
+                        BackgroundColor3 =
+                            Config.Theme.Tertiary,
+
+                        BorderSizePixel =
+                            0,
+
+                        ClipsDescendants =
+                            true
+                    }
+                )
+
+            Corner(
+                Container,
+                13
+            )
+
+
+            local Button =
+                New(
+                    "TextButton",
+                    {
+                        Parent =
+                            Container,
+
+                        Size =
+                            UDim2.new(
+                                1,
+                                0,
+                                0,
+                                52
+                            ),
+
+                        BackgroundTransparency =
+                            1,
+
+                        Text =
+                            "",
+
+                        AutoButtonColor =
+                            false
+                    }
+                )
+
+
+            local Label =
+                New(
+                    "TextLabel",
+                    {
+                        Parent =
+                            Button,
+
+                        Position =
+                            UDim2.fromOffset(
+                                14,
+                                0
+                            ),
+
+                        Size =
+                            UDim2.new(
+                                .45,
+                                0,
+                                1,
+                                0
+                            ),
+
+                        BackgroundTransparency =
+                            1,
+
+                        Text =
+                            Text,
+
+                        Font =
+                            Enum.Font.GothamMedium,
+
+                        TextSize =
+                            11,
+
+                        TextColor3 =
+                            Config.Theme.Text,
+
+                        TextXAlignment =
+                            Enum.TextXAlignment.Left
+                    }
+                )
+
+
+            local SelectedLabel =
+                New(
+                    "TextLabel",
+                    {
+                        Parent =
+                            Button,
+
+                        AnchorPoint =
+                            Vector2.new(
+                                1,
+                                .5
+                            ),
+
+                        Position =
+                            UDim2.new(
+                                1,
+                                -35,
+                                .5,
+                                0
+                            ),
+
+                        Size =
+                            UDim2.new(
+                                .4,
+                                0,
+                                0,
+                                22
+                            ),
+
+                        BackgroundTransparency =
+                            1,
+
+                        Text =
+                            tostring(
+                                Selected
+                                or
+                                "None"
+                            ),
+
+                        Font =
+                            Enum.Font.Gotham,
+
+                        TextSize =
+                            10,
+
+                        TextColor3 =
+                            Config.Theme.Accent,
+
+                        TextXAlignment =
+                            Enum.TextXAlignment.Right
+                    }
+                )
+
+
+            local Arrow =
+                New(
+                    "TextLabel",
+                    {
+                        Parent =
+                            Button,
+
+                        AnchorPoint =
+                            Vector2.new(
+                                1,
+                                .5
+                            ),
+
+                        Position =
+                            UDim2.new(
+                                1,
+                                -12,
+                                .5,
+                                0
+                            ),
+
+                        Size =
+                            UDim2.fromOffset(
+                                16,
+                                16
+                            ),
+
+                        BackgroundTransparency =
+                            1,
+
+                        Text =
+                            "⌄",
+
+                        Font =
+                            Enum.Font.GothamBold,
+
+                        TextSize =
+                            14,
+
+                        TextColor3 =
+                            Config.Theme.SubText
+                    }
+                )
+
+
+            local OptionHolder =
+                New(
+                    "ScrollingFrame",
+                    {
+                        Parent =
+                            Container,
+
+                        Position =
+                            UDim2.fromOffset(
+                                8,
+                                55
+                            ),
+
+                        Size =
+                            UDim2.new(
+                                1,
+                                -16,
+                                0,
+                                130
+                            ),
+
+                        BackgroundColor3 =
+                            Config.Theme.Secondary,
+
+                        BorderSizePixel =
+                            0,
+
+                        ScrollBarThickness =
+                            2,
+
+                        ScrollBarImageColor3 =
+                            Config.Theme.Accent,
+
+                        CanvasSize =
+                            UDim2.new(),
+
+                        Visible =
+                            true
+                    }
+                )
+
+            Corner(
+                OptionHolder,
+                10
+            )
+
+
+            local OptionLayout =
+                New(
+                    "UIListLayout",
+                    {
+                        Parent =
+                            OptionHolder,
+
+                        Padding =
+                            UDim.new(
+                                0,
+                                4
+                            )
+                    }
+                )
+
+
+            local function Rebuild()
+
+                for _, Child in ipairs(
+                    OptionHolder:GetChildren()
+                ) do
+
+                    if Child:IsA(
+                        "TextButton"
+                    ) then
+
+                        Child:Destroy()
+
+                    end
+
+                end
+
+
+                for _, Option in ipairs(
+                    Options
+                ) do
+
+                    local OptionButton =
+                        New(
+                            "TextButton",
+                            {
+                                Parent =
+                                    OptionHolder,
+
+                                Size =
+                                    UDim2.new(
+                                        1,
+                                        -8,
+                                        0,
+                                        32
+                                    ),
+
+                                BackgroundColor3 =
+                                    Config.Theme.Tertiary,
+
+                                BorderSizePixel =
+                                    0,
+
+                                Text =
+                                    tostring(
+                                        Option
+                                    ),
+
+                                Font =
+                                    Enum.Font.Gotham,
+
+                                TextSize =
+                                    10,
+
+                                TextColor3 =
+                                    Config.Theme.Text,
+
+                                AutoButtonColor =
+                                    false
+                            }
+                        )
+
+                    Corner(
+                        OptionButton,
+                        8
+                    )
+
+
+                    OptionButton.MouseEnter:Connect(
+                        function()
+
+                            Tween(
+                                OptionButton,
+                                .12,
+                                {
+                                    BackgroundColor3 =
+                                        Config.Theme.Hover
+                                }
+                            )
+
+                        end
+                    )
+
+
+                    OptionButton.MouseLeave:Connect(
+                        function()
+
+                            Tween(
+                                OptionButton,
+                                .12,
+                                {
+                                    BackgroundColor3 =
+                                        Config.Theme.Tertiary
+                                }
+                            )
+
+                        end
+                    )
+
+
+                    OptionButton.MouseButton1Click:Connect(
+                        function()
+
+                            Selected =
+                                Option
+
+                            SelectedLabel.Text =
+                                tostring(
+                                    Option
+                                )
+
+
+                            Open =
+                                false
+
+
+                            Tween(
+                                Container,
+                                .25,
+                                {
+                                    Size =
+                                        UDim2.new(
+                                            1,
+                                            0,
+                                            0,
+                                            52
+                                        )
+                                }
+                            )
+
+
+                            Tween(
+                                Arrow,
+                                .2,
+                                {
+                                    Rotation =
+                                        0
+                                }
+                            )
+
+
+                            if Callback then
+
+                                Callback(
+                                    Option
+                                )
+
+                            end
+
+                        end
+                    )
+
+                end
+
+
+                OptionHolder.CanvasSize =
+                    UDim2.new(
+                        0,
+                        0,
+                        0,
+                        OptionLayout.AbsoluteContentSize.Y
+                            + 8
+                    )
+
+            end
+
+
+            Rebuild()
+
+
+            Button.MouseButton1Click:Connect(
+                function()
+
+                    Open =
+                        not Open
+
+
+                    if Open then
+
+                        Tween(
+                            Container,
+                            .28,
+                            {
+                                Size =
+                                    UDim2.new(
+                                        1,
+                                        0,
+                                        0,
+                                        195
+                                    )
+                            },
+                            Enum.EasingStyle.Quint
+                        )
+
+
+                        Tween(
+                            Arrow,
+                            .22,
+                            {
+                                Rotation =
+                                    180
+                            }
+                        )
+
+                    else
+
+                        Tween(
+                            Container,
+                            .25,
+                            {
+                                Size =
+                                    UDim2.new(
+                                        1,
+                                        0,
+                                        0,
+                                        52
+                                    )
+                            }
+                        )
+
+
+                        Tween(
+                            Arrow,
+                            .2,
+                            {
+                                Rotation =
+                                    0
+                            }
+                        )
+
+                    end
+
+                end
+            )
+
+
+            return {
+
+                Set =
+                    function(_, Value)
+
+                        Selected =
+                            Value
+
+                        SelectedLabel.Text =
+                            tostring(
+                                Value
+                            )
+
+                    end,
+
+                Refresh =
+                    function(_, NewOptions)
+
+                        Options =
+                            NewOptions
+
+                        Rebuild()
+
+                    end,
+
+                Get =
+                    function()
+
+                        return Selected
+
+                    end
+            }
+
+        end
+
+--==============================================================
+-- COLOR PICKER
+--==============================================================
+
+        function API:CreateColorPicker(
+            Text,
+            Default,
+            Callback
+        )
+
+            local Color =
+                Default
+                or
+                Config.Theme.Accent
+
+
+            local H,
+                S,
+                V =
+                Color3.toHSV(
+                    Color
+                )
+
+
+            local Open =
+                false
+
+
+            local Container =
+                New(
+                    "Frame",
+                    {
+                        Parent =
+                            Holder,
+
+                        Size =
+                            UDim2.new(
+                                1,
+                                0,
+                                0,
+                                52
+                            ),
+
+                        BackgroundColor3 =
+                            Config.Theme.Tertiary,
+
+                        BorderSizePixel =
+                            0,
+
+                        ClipsDescendants =
+                            true
+                    }
+                )
+
+            Corner(
+                Container,
+                13
+            )
+
+
+            local Button =
+                New(
+                    "TextButton",
+                    {
+                        Parent =
+                            Container,
+
+                        Size =
+                            UDim2.new(
+                                1,
+                                0,
+                                0,
+                                52
+                            ),
+
+                        BackgroundTransparency =
+                            1,
+
+                        Text =
+                            "",
+
+                        AutoButtonColor =
+                            false
+                    }
+                )
+
+
+            local Label =
+                New(
+                    "TextLabel",
+                    {
+                        Parent =
+                            Button,
+
+                        Position =
+                            UDim2.fromOffset(
+                                14,
+                                0
+                            ),
+
+                        Size =
+                            UDim2.new(
+                                1,
+                                -80,
+                                1,
+                                0
+                            ),
+
+                        BackgroundTransparency =
+                            1,
+
+                        Text =
+                            Text,
+
+                        Font =
+                            Enum.Font.GothamMedium,
+
+                        TextSize =
+                            11,
+
+                        TextColor3 =
+                            Config.Theme.Text,
+
+                        TextXAlignment =
+                            Enum.TextXAlignment.Left
+                    }
+                )
+
+
+            local Preview =
+                New(
+                    "Frame",
+                    {
+                        Parent =
+                            Button,
+
+                        AnchorPoint =
+                            Vector2.new(
+                                1,
+                                .5
+                            ),
+
+                        Position =
+                            UDim2.new(
+                                1,
+                                -14,
+                                .5,
+                                0
+                            ),
+
+                        Size =
+                            UDim2.fromOffset(
+                                30,
+                                30
+                            ),
+
+                        BackgroundColor3 =
+                            Color,
+
+                        BorderSizePixel =
+                            0
+                    }
+                )
+
+            Corner(
+                Preview,
+                9
+            )
+
+            Stroke(
+                Preview,
+                Color3.new(
+                    1,
+                    1,
+                    1
+                ),
+                .8,
+                1
+            )
+
+
+            local Picker =
+                New(
+                    "Frame",
+                    {
+                        Parent =
+                            Container,
+
+                        Position =
+                            UDim2.fromOffset(
+                                10,
+                                60
+                            ),
+
+                        Size =
+                            UDim2.new(
+                                1,
+                                -20,
+                                0,
+                                245
+                            ),
+
+                        BackgroundColor3 =
+                            Config.Theme.Secondary,
+
+                        BorderSizePixel =
+                            0
+                    }
+                )
+
+            Corner(
+                Picker,
+                12
+            )
+
+
+            --==================================================
+            -- SATURATION / VALUE
+            --==================================================
+
+            local SV =
+                New(
+                    "ImageLabel",
+                    {
+                        Parent =
+                            Picker,
+
+                        Position =
+                            UDim2.fromOffset(
+                                12,
+                                12
+                            ),
+
+                        Size =
+                            UDim2.new(
+                                1,
+                                -24,
+                                0,
+                                145
+                            ),
+
+                        BackgroundColor3 =
+                            Color3.fromHSV(
+                                H,
+                                1,
+                                1
+                            ),
+
+                        BorderSizePixel =
+                            0,
+
+                        Image =
+                            ""
+                    }
+                )
+
+            Corner(
+                SV,
+                9
+            )
+
+
+            local White =
+                New(
+                    "Frame",
+                    {
+                        Parent =
+                            SV,
+
+                        Size =
+                            UDim2.fromScale(
+                                1,
+                                1
+                            ),
+
+                        BackgroundColor3 =
+                            Color3.new(
+                                1,
+                                1,
+                                1
+                            ),
+
+                        BorderSizePixel =
+                            0
+                    }
+                )
+
+
+            Corner(
+                White,
+                9
+            )
+
+
+            local WhiteGradient =
+                New(
+                    "UIGradient",
+                    {
+                        Parent =
+                            White,
+
+                        Color =
+                            ColorSequence.new(
+                                Color3.new(
+                                    1,
+                                    1,
+                                    1
+                                ),
+
+                                Color3.new(
+                                    1,
+                                    1,
+                                    1
+                                )
+                            ),
+
+                        Transparency =
+                            NumberSequence.new(
+                                0,
+                                1
+                            ),
+
+                        Rotation =
+                            0
+                    }
+                )
+
+
+            local Black =
+                New(
+                    "Frame",
+                    {
+                        Parent =
+                            SV,
+
+                        Size =
+                            UDim2.fromScale(
+                                1,
+                                1
+                            ),
+
+                        BackgroundColor3 =
+                            Color3.new(
+                                0,
+                                0,
+                                0
+                            ),
+
+                        BorderSizePixel =
+                            0
+                    }
+                )
+
+
+            Corner(
+                Black,
+                9
+            )
+
+
+            local BlackGradient =
+                New(
+                    "UIGradient",
+                    {
+                        Parent =
+                            Black,
+
+                        Transparency =
+                            NumberSequence.new(
+                                1,
+                                0
+                            ),
+
+                        Rotation =
+                            90
+                    }
+                )
+
+
+            local SVCursor =
+                New(
+                    "Frame",
+                    {
+                        Parent =
+                            SV,
+
+                        AnchorPoint =
+                            Vector2.new(
+                                .5,
+                                .5
+                            ),
+
+                        Position =
+                            UDim2.fromScale(
+                                S,
+                                1 - V
+                            ),
+
+                        Size =
+                            UDim2.fromOffset(
+                                12,
+                                12
+                            ),
+
+                        BackgroundColor3 =
+                            Color3.new(
+                                1,
+                                1,
+                                1
+                            ),
+
+                        BorderSizePixel =
+                            0
+                    }
+                )
+
+            Corner(
+                SVCursor,
+                8
+            )
+
+            Stroke(
+                SVCursor,
+                Color3.new(
+                    0,
+                    0,
+                    0
+                ),
+                .2,
+                1
+            )
+
+            --==================================================
+            -- HUE BAR
+            --==================================================
+
+            local Hue =
+                New(
+                    "Frame",
+                    {
+                        Parent =
+                            Picker,
+
+                        Position =
+                            UDim2.fromOffset(
+                                12,
+                                168
+                            ),
+
+                        Size =
+                            UDim2.new(
+                                1,
+                                -24,
+                                0,
+                                16
+                            ),
+
+                        BackgroundColor3 =
+                            Color3.new(
+                                1,
+                                1,
+                                1
+                            ),
+
+                        BorderSizePixel =
+                            0
+                    }
+                )
+
+            Corner(
+                Hue,
+                8
+            )
+
+
+            local HueGradient =
+                New(
+                    "UIGradient",
+                    {
+                        Parent =
+                            Hue,
+
+                        Color =
+                            ColorSequence.new({
+
+                                ColorSequenceKeypoint.new(
+                                    0,
+                                    Color3.fromRGB(
+                                        255,
+                                        0,
+                                        0
+                                    )
+                                ),
+
+                                ColorSequenceKeypoint.new(
+                                    .166,
+                                    Color3.fromRGB(
+                                        255,
+                                        255,
+                                        0
+                                    )
+                                ),
+
+                                ColorSequenceKeypoint.new(
+                                    .333,
+                                    Color3.fromRGB(
+                                        0,
+                                        255,
+                                        0
+                                    )
+                                ),
+
+                                ColorSequenceKeypoint.new(
+                                    .5,
+                                    Color3.fromRGB(
+                                        0,
+                                        255,
+                                        255
+                                    )
+                                ),
+
+                                ColorSequenceKeypoint.new(
+                                    .666,
+                                    Color3.fromRGB(
+                                        0,
+                                        0,
+                                        255
+                                    )
+                                ),
+
+                                ColorSequenceKeypoint.new(
+                                    .833,
+                                    Color3.fromRGB(
+                                        255,
+                                        0,
+                                        255
+                                    )
+                                ),
+
+                                ColorSequenceKeypoint.new(
+                                    1,
+                                    Color3.fromRGB(
+                                        255,
+                                        0,
+                                        0
+                                    )
+                                )
+                            })
+                    }
+                )
+
+
+            local HueCursor =
+                New(
+                    "Frame",
+                    {
+                        Parent =
+                            Hue,
+
+                        AnchorPoint =
+                            Vector2.new(
+                                .5,
+                                .5
+                            ),
+
+                        Position =
+                            UDim2.fromScale(
+                                H,
+                                .5
+                            ),
+
+                        Size =
+                            UDim2.fromOffset(
+                                7,
+                                24
+                            ),
+
+                        BackgroundColor3 =
+                            Color3.new(
+                                1,
+                                1,
+                                1
+                            ),
+
+                        BorderSizePixel =
+                            0
+                    }
+                )
+
+            Corner(
+                HueCursor,
+                4
+            )
+
+            Stroke(
+                HueCursor,
+                Color3.new(
+                    0,
+                    0,
+                    0
+                ),
+                .2,
+                1
+            )
+
+            --==================================================
+            -- HEX
+            --==================================================
+
+            local HexLabel =
+                New(
+                    "TextLabel",
+                    {
+                        Parent =
+                            Picker,
+
+                        Position =
+                            UDim2.fromOffset(
+                                12,
+                                195
+                            ),
+
+                        Size =
+                            UDim2.new(
+                                1,
+                                -24,
+                                0,
+                                25
+                            ),
+
+                        BackgroundTransparency =
+                            1,
+
+                        Text =
+                            "#FFFFFF",
+
+                        Font =
+                            Enum.Font.GothamBold,
+
+                        TextSize =
+                            11,
+
+                        TextColor3 =
+                            Config.Theme.Text,
+
+                        TextXAlignment =
+                            Enum.TextXAlignment.Left
+                    }
+                )
+
+
+            local function UpdateColor()
+
+                Color =
+                    Color3.fromHSV(
+                        H,
+                        S,
+                        V
+                    )
+
+
+                Preview.BackgroundColor3 =
+                    Color
+
+
+                SV.BackgroundColor3 =
+                    Color3.fromHSV(
+                        H,
+                        1,
+                        1
+                    )
+
+
+                SVCursor.Position =
+                    UDim2.fromScale(
+                        S,
+                        1 - V
+                    )
+
+
+                HueCursor.Position =
+                    UDim2.fromScale(
+                        H,
+                        .5
+                    )
+
+
+                local R =
+                    math.floor(
+                        Color.R * 255
+                    )
+
+                local G =
+                    math.floor(
+                        Color.G * 255
+                    )
+
+                local B =
+                    math.floor(
+                        Color.B * 255
+                    )
+
+
+                HexLabel.Text =
+                    string.format(
+                        "#%02X%02X%02X",
+                        R,
+                        G,
+                        B
+                    )
+
+
+                if Callback then
+
+                    Callback(
+                        Color
+                    )
+
+                end
+
+            end
+
+
+            local SVDragging =
+                false
+
+            local HueDragging =
+                false
+
+
+            local function UpdateSV(
+                Input
+            )
+
+                local X =
+                    math.clamp(
+                        (
+                            Input.Position.X
+                            -
+                            SV.AbsolutePosition.X
+                        )
+                        /
+                        SV.AbsoluteSize.X,
+
+                        0,
+                        1
+                    )
+
+
+                local Y =
+                    math.clamp(
+                        (
+                            Input.Position.Y
+                            -
+                            SV.AbsolutePosition.Y
+                        )
+                        /
+                        SV.AbsoluteSize.Y,
+
+                        0,
+                        1
+                    )
+
+
+                S =
+                    X
+
+                V =
+                    1 - Y
+
+
+                UpdateColor()
+
+            end
+
+
+            local function UpdateHue(
+                Input
+            )
+
+                H =
+                    math.clamp(
+                        (
+                            Input.Position.X
+                            -
+                            Hue.AbsolutePosition.X
+                        )
+                        /
+                        Hue.AbsoluteSize.X,
+
+                        0,
+                        1
+                    )
+
+
+                UpdateColor()
+
+            end
+
+
+            SV.InputBegan:Connect(
+                function(Input)
+
+                    if
+                        Input.UserInputType
+                        ==
+                        Enum.UserInputType.MouseButton1
+
+                        or
+
+                        Input.UserInputType
+                        ==
+                        Enum.UserInputType.Touch
+                    then
+
+                        SVDragging =
+                            true
+
+                        UpdateSV(
+                            Input
+                        )
+
+                    end
+
+                end
+            )
+
+
+            Hue.InputBegan:Connect(
+                function(Input)
+
+                    if
+                        Input.UserInputType
+                        ==
+                        Enum.UserInputType.MouseButton1
+
+                        or
+
+                        Input.UserInputType
+                        ==
+                        Enum.UserInputType.Touch
+                    then
+
+                        HueDragging =
+                            true
+
+                        UpdateHue(
+                            Input
+                        )
+
+                    end
+
+                end
+            )
+
+
+            UserInputService.InputChanged:Connect(
+                function(Input)
+
+                    if
+                        Input.UserInputType
+                        ==
+                        Enum.UserInputType.MouseMovement
+
+                        or
+
+                        Input.UserInputType
+                        ==
+                        Enum.UserInputType.Touch
+                    then
+
+                        if SVDragging then
+
+                            UpdateSV(
+                                Input
+                            )
+
+                        elseif HueDragging then
+
+                            UpdateHue(
+                                Input
+                            )
+
+                        end
+
+                    end
+
+                end
+            )
+
+
+            UserInputService.InputEnded:Connect(
+                function(Input)
+
+                    if
+                        Input.UserInputType
+                        ==
+                        Enum.UserInputType.MouseButton1
+
+                        or
+
+                        Input.UserInputType
+                        ==
+                        Enum.UserInputType.Touch
+                    then
+
+                        SVDragging =
+                            false
+
+                        HueDragging =
+                            false
+
+                    end
+
+                end
+            )
+
+
+            Button.MouseButton1Click:Connect(
+                function()
+
+                    Open =
+                        not Open
+
+
+                    if Open then
+
+                        Tween(
+                            Container,
+                            .3,
+                            {
+                                Size =
+                                    UDim2.new(
+                                        1,
+                                        0,
+                                        0,
+                                        315
+                                    )
+                            },
+                            Enum.EasingStyle.Quint
+                        )
+
+                    else
+
+                        Tween(
+                            Container,
+                            .25,
+                            {
+                                Size =
+                                    UDim2.new(
+                                        1,
+                                        0,
+                                        0,
+                                        52
+                                    )
+                            }
+                        )
+
+                    end
+
+                end
+            )
+
+
+            UpdateColor()
+
+
+            return {
+
+                Set =
+                    function(_, NewColor)
+
+                        H,
+                        S,
+                        V =
+                            Color3.toHSV(
+                                NewColor
+                            )
+
+                        UpdateColor()
+
+                    end,
+
+                Get =
+                    function()
+
+                        return Color
+
+                    end
+            }
+
+        end
+
+
+        return API
+
+    end
+
+
+    return Tab
+
+end
+
+--==============================================================
+-- NOTIFICATION SYSTEM
+--==============================================================
+
+local NotificationHolder =
+    New(
+        "Frame",
+        {
+            Parent =
+                ScreenGui,
+
+            AnchorPoint =
+                Vector2.new(
+                    1,
+                    1
+                ),
+
+            Position =
+                UDim2.new(
+                    1,
+                    -18,
+                    1,
+                    -18
+                ),
+
+            Size =
+                UDim2.fromOffset(
+                    340,
+                    400
+                ),
+
+            BackgroundTransparency =
+                1,
+
+            ZIndex =
+                100
+        }
+    )
+
+
+New(
+    "UIListLayout",
+    {
+        Parent =
+            NotificationHolder,
+
+        Padding =
+            UDim.new(
+                0,
+                9
+            ),
+
+        VerticalAlignment =
+            Enum.VerticalAlignment.Bottom
+    }
+)
+
+
+function Burst:Notify(
+    TitleText,
+    MessageText,
+    Duration
+)
+
+    Duration =
+        Duration or 3
+
+
+    local Notification =
+        New(
+            "Frame",
+            {
+                Parent =
+                    NotificationHolder,
+
+                Size =
+                    UDim2.new(
+                        1,
+                        0,
+                        0,
+                        76
+                    ),
+
+                BackgroundColor3 =
+                    Config.Theme.Secondary,
+
+                BorderSizePixel =
+                    0,
+
+                Position =
+                    UDim2.new(
+                        1,
+                        40,
+                        0,
+                        0
+                    ),
+
+                ZIndex =
+                    101
+            }
+        )
+
+    Corner(
+        Notification,
+        14
+    )
+
+    Stroke(
+        Notification,
+        Config.Theme.Stroke,
+        .7,
+        1
+    )
+
+
+    local Bar =
+        New(
+            "Frame",
+            {
+                Parent =
+                    Notification,
+
+                Position =
+                    UDim2.fromOffset(
+                        0,
+                        0
+                    ),
+
+                Size =
+                    UDim2.new(
+                        0,
+                        4,
+                        1,
+                        0
+                    ),
+
+                BackgroundColor3 =
+                    Config.Theme.Accent,
+
+                BorderSizePixel =
+                    0,
+
+                ZIndex =
+                    102
+            }
+        )
+
+    Corner(
+        Bar,
+        4
+    )
+
+
+    New(
+        "TextLabel",
+        {
+            Parent =
+                Notification,
+
+            Position =
+                UDim2.fromOffset(
+                    16,
+                    10
+                ),
+
+            Size =
+                UDim2.new(
+                    1,
+                    -25,
+                    0,
+                    21
+                ),
+
+            BackgroundTransparency =
+                1,
+
+            Text =
+                TitleText,
+
+            Font =
+                Enum.Font.GothamBold,
+
+            TextSize =
+                13,
+
+            TextColor3 =
+                Config.Theme.Text,
+
+            TextXAlignment =
+                Enum.TextXAlignment.Left,
+
+            ZIndex =
+                103
+        }
+    )
+
+
+    New(
+        "TextLabel",
+        {
+            Parent =
+                Notification,
+
+            Position =
+                UDim2.fromOffset(
+                    16,
+                    33
+                ),
+
+            Size =
+                UDim2.new(
+                    1,
+                    -25,
+                    0,
+                    34
+                ),
+
+            BackgroundTransparency =
+                1,
+
+            Text =
+                MessageText,
+
+            Font =
+                Enum.Font.Gotham,
+
+            TextSize =
+                10,
+
+            TextColor3 =
+                Config.Theme.SubText,
+
+            TextWrapped =
+                true,
+
+            TextXAlignment =
+                Enum.TextXAlignment.Left,
+
+            ZIndex =
+                103
+        }
+    )
+
+
+    local Progress =
+        New(
+            "Frame",
+            {
+                Parent =
+                    Notification,
+
+                Position =
+                    UDim2.new(
+                        0,
+                        0,
+                        1,
+                        -2
+                    ),
+
+                Size =
+                    UDim2.new(
+                        1,
+                        0,
+                        0,
+                        2
+                    ),
+
+                BackgroundColor3 =
+                    Config.Theme.Accent,
+
+                BorderSizePixel =
+                    0,
+
+                ZIndex =
+                    104
+            }
+        )
+
+
+    Tween(
+        Notification,
+        .5,
+        {
+            Position =
+                UDim2.new(
+                    0,
+                    0,
+                    0,
+                    0
+                )
+        },
+        Enum.EasingStyle.Quint
+    )
+
+
+    Tween(
+        Progress,
+        Duration,
+        {
+            Size =
+                UDim2.new(
+                    0,
+                    0,
+                    0,
+                    2
+                )
+        },
+        Enum.EasingStyle.Linear
+    )
+
+
+    task.delay(
+        Duration,
+        function()
+
+            Tween(
+                Notification,
+                .45,
+                {
+                    Position =
+                        UDim2.new(
+                            1,
+                            40,
+                            0,
+                            0
+                        )
+                },
+                Enum.EasingStyle.Quint,
+                Enum.EasingDirection.In
+            )
+
+
+            task.wait(
+                .5
+            )
+
+
+            if Notification then
+
+                Notification:Destroy()
+
+            end
+
+        end
+    )
+
+end
+
+--==============================================================
+-- OPEN / CLOSE ANIMATION
+--==============================================================
+
+local Visible =
+    true
+
+local Animating =
+    false
+
+
+local function OpenUI()
+
+    if Visible
+        or
+        Animating
+    then
+
+        return
+
+    end
+
+
+    Animating =
+        true
+
+    Visible =
+        true
+
+
+    Main.Visible =
+        true
+
+
+    Scale.Scale =
+        .72
+
+
+    Main.Position =
+        UDim2.fromScale(
+            .5,
+            .54
+        )
+
+
+    Tween(
+        Scale,
+        .5,
+        {
+            Scale =
+                1
+        },
+        Enum.EasingStyle.Back,
+        Enum.EasingDirection.Out
+    )
+
+
+    Tween(
+        Main,
+        .5,
+        {
+            Position =
+                UDim2.fromScale(
+                    .5,
+                    .5
+                )
+        },
+        Enum.EasingStyle.Quint
+    )
+
+
+    task.wait(
+        .45
+    )
+
+
+    Animating =
+        false
+
+end
+
+
+local function CloseUI()
+
+    if not Visible
+        or
+        Animating
+    then
+
+        return
+
+    end
+
+
+    Animating =
+        true
+
+
+    Tween(
+        Scale,
+        .12,
+        {
+            Scale =
+                1.025
+        },
+        Enum.EasingStyle.Quad
+    )
+
+
+    task.wait(
+        .06
+    )
+
+
+    Tween(
+        Scale,
+        .34,
+        {
+            Scale =
+                .72
+        },
+        Enum.EasingStyle.Quint,
+        Enum.EasingDirection.In
+    )
+
+
+    Tween(
+        Main,
+        .34,
+        {
+            Position =
+                UDim2.fromScale(
+                    .5,
+                    .54
+                )
+        },
+        Enum.EasingStyle.Quint,
+        Enum.EasingDirection.In
+    )
+
+
+    task.wait(
+        .34
+    )
+
+
+    Main.Visible =
+        false
+
+    Scale.Scale =
+        1
+
+    Main.Position =
+        UDim2.fromScale(
+            .5,
+            .5
+        )
+
+    Visible =
+        false
+
+    Animating =
+        false
+
+end
+
+
+local function ToggleUI()
+
+    if Visible then
+
+        CloseUI()
+
+    else
+
+        OpenUI()
+
+    end
+
+end
+
+--==============================================================
+-- CLOSE BUTTON
+--==============================================================
+
+Close.MouseButton1Click:Connect(
+    function()
+
+        CloseUI()
+
+    end
+)
+
+--==============================================================
+-- KEYBIND
+--==============================================================
+
+UserInputService.InputBegan:Connect(
+    function(
+        Input,
+        Processed
+    )
+
+        if Processed then
+            return
+        end
+
+
+        if Input.KeyCode ==
+            Config.ToggleKey
+        then
+
+            ToggleUI()
+
+        end
+
+    end
+)
+
+
+function Burst:SetToggleKey(
+    Key
+)
+
+    if typeof(Key) ==
+        "EnumItem"
+    then
+
+        Config.ToggleKey =
+            Key
+
+    end
+
+end
+
+--==============================================================
+-- DRAG
+--==============================================================
+
+local Dragging =
+    false
+
+local DragStart
+
+local StartPosition
+
+
+Header.InputBegan:Connect(
+    function(Input)
+
+        if
+            Input.UserInputType
+            ==
+            Enum.UserInputType.MouseButton1
+
+            or
+
+            Input.UserInputType
+            ==
+            Enum.UserInputType.Touch
+        then
+
+            Dragging =
+                true
+
+            DragStart =
+                Input.Position
+
+            StartPosition =
+                Main.Position
+
+        end
+
+    end
+)
+
+
+Header.InputEnded:Connect(
+    function(Input)
+
+        if
+            Input.UserInputType
+            ==
+            Enum.UserInputType.MouseButton1
+
+            or
+
+            Input.UserInputType
+            ==
+            Enum.UserInputType.Touch
+        then
+
+            Dragging =
+                false
+
+        end
+
+    end
+)
+
+
+UserInputService.InputChanged:Connect(
+    function(Input)
+
+        if not Dragging then
+            return
+        end
+
+
+        if
+            Input.UserInputType
+            ==
+            Enum.UserInputType.MouseMovement
+
+            or
+
+            Input.UserInputType
+            ==
+            Enum.UserInputType.Touch
+        then
+
+            local Delta =
+                Input.Position
+                -
+                DragStart
+
+
+            Main.Position =
+                UDim2.new(
+
+                    StartPosition.X.Scale,
+
+                    StartPosition.X.Offset
+                        +
+                        Delta.X,
+
+                    StartPosition.Y.Scale,
+
+                    StartPosition.Y.Offset
+                        +
+                        Delta.Y
+                )
+
+        end
+
+    end
+)
+
+--==============================================================
+-- ACCENT
+--==============================================================
+
+function Burst:SetAccent(
+    Color
+)
+
+    if typeof(Color) ~=
+        "Color3"
+    then
+
+        return
+
+    end
+
+
+    Config.Theme.Accent =
+        Color
+
+
+    AccentLine.BackgroundColor3 =
+        Color
+
+    Logo.BackgroundColor3 =
+        Color
+
+    Glow.BackgroundColor3 =
+        Color
+
+    Close.BackgroundColor3 =
+        Config.Theme.Tertiary
+
+
+    for _, Object in ipairs(
+        ScreenGui:GetDescendants()
+    ) do
+
+        if Object:IsA(
+            "UIStroke"
+        ) then
+
+            -- leave borders alone
+
+        elseif Object:IsA(
+            "TextLabel"
+        ) then
+
+            if Object.TextColor3 ==
+                Config.Theme.Accent
+            then
+
+                Object.TextColor3 =
+                    Color
+
+            end
+
+        end
+
+    end
+
+end
+
+--==============================================================
+-- ROUNDED CORNERS
+--==============================================================
+
+function Burst:SetCornerRadius(
+    Radius
+)
+
+    Radius =
+        math.clamp(
+            tonumber(
+                Radius
+            ) or 12,
+
+            0,
+            40
+        )
+
+
+    for _, Object in ipairs(
+        ScreenGui:GetDescendants()
+    ) do
+
+        local C =
+            Object:FindFirstChildOfClass(
+                "UICorner"
+            )
+
+        if C then
+
+            C.CornerRadius =
+                UDim.new(
+                    0,
+                    Radius
+                )
+
+        end
+
+    end
+
+end
+
+--==============================================================
+-- DESTROY
+--==============================================================
+
+function Burst:Destroy()
+
+    pcall(
+        function()
+
+            ScreenGui:Destroy()
+
+        end
+    )
+
+end
+
+--==============================================================
+-- WELCOME ANIMATION
+--==============================================================
+
+Main.Visible =
+    false
+
+Scale.Scale =
+    .65
+
+Main.Position =
+    UDim2.fromScale(
+        .5,
+        .56
+    )
+
+
+task.spawn(
+    function()
+
+        task.wait(
+            .12
+        )
+
+
+        Main.Visible =
+            true
+
+
+        -- Logo entrance
+
+        LogoImage.ImageTransparency =
+            1
+
+        Logo.Size =
+            UDim2.fromOffset(
+                0,
+                0
+            )
+
+
+        Tween(
+            Logo,
+            .55,
+            {
+                Size =
+                    UDim2.fromOffset(
+                        42,
+                        42
+                    )
+            },
+            Enum.EasingStyle.Back
+        )
+
+
+        Tween(
+            LogoImage,
+            .35,
+            {
+                ImageTransparency =
+                    0
+            }
+        )
+
+
+        -- Main entrance
+
+        Tween(
+            Scale,
+            .65,
+            {
+                Scale =
+                    1
+            },
+            Enum.EasingStyle.Back
+        )
+
+
+        Tween(
+            Main,
+            .6,
+            {
+                Position =
+                    UDim2.fromScale(
+                        .5,
+                        .5
+                    )
+            },
+            Enum.EasingStyle.Quint
+        )
+
+
+        -- Glow pulse
+
+        Tween(
+            Glow,
+            .8,
+            {
+                BackgroundTransparency =
+                    .86
+            },
+            Enum.EasingStyle.Sine
+        )
+
+
+        task.wait(
+            .35
+        )
+
+
+        Burst:Notify(
+            "Welcome to BURST!",
+            "Universal Interface V3 loaded successfully.",
+            4
+        )
+
+    end
+)
+
+--==============================================================
+-- FINAL
+--==============================================================
+
+return Burst
